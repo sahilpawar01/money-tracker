@@ -7,23 +7,39 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
   <script>
     let balance = 0;
+    let previousBalance = 0;
     let isInitialBalanceSet = false;
 
     function updateDisplay() {
       document.getElementById('balance').innerText = balance + " ₹";
       localStorage.setItem('balance', balance);
+      localStorage.setItem('previousBalance', previousBalance);
       document.getElementById('initialBalanceSection').style.display = 'none';
       document.getElementById('mainSection').style.display = 'block';
+      
+      // Show/hide undo button based on whether there's a previous balance
+      const undoBtn = document.getElementById('undoBtn');
+      undoBtn.style.display = previousBalance !== null ? 'block' : 'none';
     }
 
     function changeBalance(amount) {
+      previousBalance = balance;
       balance += amount;
       updateDisplay();
     }
 
     function resetBalance() {
       if (confirm('Are you sure you want to reset your balance?')) {
+        previousBalance = balance;
         balance = 0;
+        updateDisplay();
+      }
+    }
+
+    function undoLastAction() {
+      if (previousBalance !== null) {
+        balance = previousBalance;
+        previousBalance = null;
         updateDisplay();
       }
     }
@@ -31,6 +47,7 @@
     function setInitialBalance() {
       const initialBalance = parseInt(document.getElementById('initialBalanceInput').value);
       if (initialBalance >= 0) {
+        previousBalance = balance;
         balance = initialBalance;
         updateDisplay();
       } else {
@@ -40,8 +57,10 @@
 
     window.onload = () => {
       const saved = localStorage.getItem('balance');
+      const savedPrevious = localStorage.getItem('previousBalance');
       if (saved !== null) {
         balance = parseInt(saved);
+        previousBalance = savedPrevious ? parseInt(savedPrevious) : null;
         updateDisplay();
       } else {
         document.getElementById('initialBalanceSection').style.display = 'block';
@@ -126,6 +145,24 @@
       background-color: #e53e3e;
     }
 
+    .undo-btn {
+      background-color: #4299e1;
+      color: white;
+      width: 100%;
+      margin-top: 0.5rem;
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .undo-btn:hover {
+      background-color: #3182ce;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
     .initial-balance-section {
       text-align: center;
     }
@@ -169,6 +206,7 @@
         <button class="deduct-btn" onclick="changeBalance(-20)">-20</button>
         <button class="deduct-btn" onclick="changeBalance(-25)">-25</button>
       </div>
+      <button class="undo-btn" id="undoBtn" onclick="undoLastAction()">↩️ Undo Last Action</button>
       <button class="reset-btn" onclick="resetBalance()">Reset Balance</button>
     </div>
   </div>
