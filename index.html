@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Balance Tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <script>
+    let balance = 0;
+    let isInitialBalanceSet = false;
+
+    function updateDisplay() {
+      document.getElementById('balance').innerText = balance + " ₹";
+      localStorage.setItem('balance', balance);
+      document.getElementById('initialBalanceSection').style.display = 'none';
+      document.getElementById('mainSection').style.display = 'block';
+    }
+
+    function changeBalance(amount) {
+      balance += amount;
+      updateDisplay();
+    }
+
+    function resetBalance() {
+      if (confirm('Are you sure you want to reset your balance?')) {
+        balance = 0;
+        updateDisplay();
+      }
+    }
+
+    function setInitialBalance() {
+      const initialBalance = parseInt(document.getElementById('initialBalanceInput').value);
+      if (initialBalance >= 0) {
+        balance = initialBalance;
+        updateDisplay();
+      } else {
+        alert('Please enter a valid positive number');
+      }
+    }
+
+    window.onload = () => {
+      const saved = localStorage.getItem('balance');
+      if (saved !== null) {
+        balance = parseInt(saved);
+        updateDisplay();
+      } else {
+        document.getElementById('initialBalanceSection').style.display = 'block';
+        document.getElementById('mainSection').style.display = 'none';
+      }
+    };
+  </script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 500px;
+    }
+
+    h1 {
+      color: #2d3748;
+      margin-bottom: 1.5rem;
+      font-size: 2rem;
+    }
+
+    #balance {
+      font-size: 3rem;
+      font-weight: 600;
+      color: #2d3748;
+      margin: 1rem 0;
+      display: block;
+    }
+
+    .button-group {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+      margin: 1rem 0;
+    }
+
+    button {
+      padding: 0.8rem;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .deduct-btn {
+      background-color: #fc8181;
+      color: white;
+    }
+
+    .deduct-btn:hover {
+      background-color: #f56565;
+    }
+
+    .reset-btn {
+      background-color: #f56565;
+      color: white;
+      width: 100%;
+      margin-top: 1rem;
+    }
+
+    .reset-btn:hover {
+      background-color: #e53e3e;
+    }
+
+    .initial-balance-section {
+      text-align: center;
+    }
+
+    .initial-balance-section input {
+      padding: 0.8rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      font-size: 1rem;
+      margin: 1rem 0;
+      width: 100%;
+      max-width: 200px;
+    }
+
+    .initial-balance-section button {
+      background-color: #4299e1;
+      color: white;
+    }
+
+    .initial-balance-section button:hover {
+      background-color: #3182ce;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>💸 Balance Tracker</h1>
+    
+    <div id="initialBalanceSection" class="initial-balance-section">
+      <h2>Set Your Initial Balance</h2>
+      <input type="number" id="initialBalanceInput" placeholder="Enter amount" min="0">
+      <button onclick="setInitialBalance()">Set Balance</button>
+    </div>
+
+    <div id="mainSection" style="display: none;">
+      <span id="balance">0 ₹</span>
+      <div class="button-group">
+        <button class="deduct-btn" onclick="changeBalance(-1)">-1</button>
+        <button class="deduct-btn" onclick="changeBalance(-5)">-5</button>
+        <button class="deduct-btn" onclick="changeBalance(-10)">-10</button>
+        <button class="deduct-btn" onclick="changeBalance(-20)">-20</button>
+        <button class="deduct-btn" onclick="changeBalance(-25)">-25</button>
+      </div>
+      <button class="reset-btn" onclick="resetBalance()">Reset Balance</button>
+    </div>
+  </div>
+</body>
+</html>
